@@ -3,6 +3,7 @@ package jm.task.core.jdbc.dao;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
 
-    private final String DATABASES = "users";
+    private final String TABLE = "users";
 
     public UserDaoJDBCImpl() {
     }
@@ -18,7 +19,7 @@ public class UserDaoJDBCImpl implements UserDao {
     public void createUsersTable() {
         try {
             Util.statement.execute(
-                    "CREATE TABLE " + DATABASES + " (" +
+                    "CREATE TABLE " + TABLE + " (" +
                             "id INT PRIMARY KEY AUTO_INCREMENT, " +
                             "name VARCHAR(30) NOT NULL, " +
                             "lastName VARCHAR(30) NOT NULL, " +
@@ -29,23 +30,26 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void dropUsersTable() {
         try {
-            Util.statement.execute("DROP TABLE " + DATABASES);
+            Util.statement.execute("DROP TABLE " + TABLE);
         } catch (SQLException ignored) {
         }
     }
 
     public void saveUser(String name, String lastName, byte age) {
-        String userSave = String.format("INSERT %s(name, lastName, age) VALUES ('%s', '%s', %d)",
-                DATABASES, name, lastName, age);
         try {
-            Util.statement.execute(userSave);
+            String sql = "INSERT " + TABLE + "(name, lastName, age) VALUES (?, ?, ?)";
+            PreparedStatement ps = Util.connection.prepareStatement(sql);
+            ps.setString(1, name);
+            ps.setString(2, lastName);
+            ps.setInt(3, age);
+            ps.executeUpdate();
         } catch (SQLException ignored) {
         }
     }
 
     public void removeUserById(long id) {
         try {
-            Util.statement.executeUpdate("DELETE FROM " + DATABASES + " WHERE id=" + id);
+            Util.statement.executeUpdate("DELETE FROM " + TABLE + " WHERE id=" + id);
         } catch (SQLException ignored) {
         }
     }
@@ -53,7 +57,7 @@ public class UserDaoJDBCImpl implements UserDao {
     public List<User> getAllUsers() {
         List<User> usersList = new ArrayList<>();
         try {
-            ResultSet result = Util.statement.executeQuery("SELECT * FROM " + DATABASES);
+            ResultSet result = Util.statement.executeQuery("SELECT * FROM " + TABLE);
             while (result.next()) {
                 User user = new User(
                         result.getString("name"),
@@ -69,7 +73,7 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void cleanUsersTable() {
         try {
-            Util.statement.execute("DELETE FROM " + DATABASES);
+            Util.statement.execute("DELETE FROM " + TABLE);
         } catch (SQLException ignored) {
         }
     }
