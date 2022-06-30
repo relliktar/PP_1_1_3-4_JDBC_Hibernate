@@ -1,13 +1,11 @@
 package jm.task.core.jdbc.util;
 
-import jm.task.core.jdbc.model.User;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Properties;
 
 public class Util {
@@ -19,6 +17,7 @@ public class Util {
     private static SessionFactory sessionFactory;
 
     public static Connection getConnection() {
+
         if (connection == null) {
             try {
                 connection = DriverManager.getConnection(URL, USER_NAME, PASSWORD);

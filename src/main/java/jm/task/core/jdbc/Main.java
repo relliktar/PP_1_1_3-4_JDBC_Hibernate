@@ -19,6 +19,7 @@ public class Main {
                 new User("Angel", "Face", (byte) 20)
         ));
         users.forEach(user -> usi.saveUser(user.getName(), user.getLastName(), user.getAge()));
+        usi.removeUserById(4);
         List<User> usersBD = usi.getAllUsers();
         usersBD.forEach(System.out::println);
         usi.cleanUsersTable();
